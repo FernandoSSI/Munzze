@@ -24,10 +24,9 @@ public class UserService {
     }
 
     public User insert(User user){
-        User existingId = findById(user.getId());
         User existingEmail = findByEmail(user.getEmail());
 
-        if(existingId !=user && existingEmail==null){
+        if(existingEmail==null){
             return userRepository.save(user);
         } else {
             return null;
