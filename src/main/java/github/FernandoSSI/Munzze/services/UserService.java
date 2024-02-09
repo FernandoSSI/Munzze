@@ -6,6 +6,7 @@ import github.FernandoSSI.Munzze.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,13 +15,17 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    private User findById(String id) {
+    public User findById(String id) {
         Optional<User> user = userRepository.findById(id);
         return user.orElseThrow(() -> new ObjectNotFoundException("Object not found"));
     }
 
-    private User findByEmail(String email){
+    public User findByEmail(String email){
         return userRepository.findByEmail(email);
+    }
+
+    public List<User> findAll(){
+        return userRepository.findAll();
     }
 
     public User insert(User user){
@@ -33,5 +38,21 @@ public class UserService {
         }
     }
 
+    public User update(User newUser){
+        User user = findById(newUser.getId());
+        user.setName(newUser.getName());
+        user.setEmail(newUser.getEmail());
+        user.setPassword(newUser.getPassword());
 
+        return userRepository.save(user);
+    }
+
+    public void delete(String id){
+        User user = findById(id);
+        if(user!=null){
+            userRepository.deleteById(id);
+        } else {
+            throw new ObjectNotFoundException("Object not found");
+        }
+    }
 }
