@@ -11,7 +11,7 @@ import java.util.Objects;
 public class Account implements Serializable {
 
     @Id
-    private String Id;
+    private String id;
     private Double totalBalance;
     private Double totalEarnings;
     private Double totalExpenses;
@@ -23,7 +23,7 @@ public class Account implements Serializable {
     }
 
     public Account(String id, Double totalBalance, Double totalEarnings, Double totalExpenses, User user) {
-        Id = id;
+        id = id;
         this.totalBalance = totalBalance;
         this.totalEarnings = totalEarnings;
         this.totalExpenses = totalExpenses;
@@ -31,11 +31,11 @@ public class Account implements Serializable {
     }
 
     public String getId() {
-        return Id;
+        return id;
     }
 
     public void setId(String id) {
-        Id = id;
+        id = id;
     }
 
     public Double getTotalBalance() {
@@ -75,11 +75,11 @@ public class Account implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return Objects.equals(Id, account.Id);
+        return Objects.equals(id, account.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(Id);
+        return Objects.hash(id);
     }
 }

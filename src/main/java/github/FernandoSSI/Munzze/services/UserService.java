@@ -1,6 +1,8 @@
 package github.FernandoSSI.Munzze.services;
 
+import github.FernandoSSI.Munzze.domain.Account;
 import github.FernandoSSI.Munzze.domain.User;
+import github.FernandoSSI.Munzze.repositories.AccountRepository;
 import github.FernandoSSI.Munzze.repositories.UserRepository;
 import github.FernandoSSI.Munzze.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     public User findById(String id) {
         Optional<User> user = userRepository.findById(id);
@@ -32,7 +37,11 @@ public class UserService {
         User existingEmail = findByEmail(user.getEmail());
 
         if(existingEmail==null){
-            return userRepository.save(user);
+            user = userRepository.save(user);
+            Account account = accountRepository.save(new Account(user.getId(), 0.0,0.0,0.0, user));
+            user.setAccount(account);
+            user = userRepository.save(user);
+            return user;
         } else {
             return null;
         }
