@@ -1,6 +1,7 @@
 package github.FernandoSSI.Munzze.services;
 
 import github.FernandoSSI.Munzze.domain.Account;
+import github.FernandoSSI.Munzze.domain.Dto.UserDto;
 import github.FernandoSSI.Munzze.domain.User;
 import github.FernandoSSI.Munzze.repositories.AccountRepository;
 import github.FernandoSSI.Munzze.repositories.UserRepository;
@@ -38,7 +39,7 @@ public class UserService {
 
         if(existingEmail==null){
             user = userRepository.save(user);
-            Account account = accountRepository.save(new Account(user.getId(), 0.0,0.0,0.0, user));
+            Account account = accountRepository.save(new Account(null, user.getId(), 0.0,0.0,0.0));
             user.setAccount(account);
             user = userRepository.save(user);
             return user;
@@ -60,6 +61,7 @@ public class UserService {
         User user = findById(id);
         if(user!=null){
             userRepository.deleteById(id);
+            accountRepository.deleteById(user.getAccount().getId());
         } else {
             throw new ObjectNotFoundException("Object not found");
         }

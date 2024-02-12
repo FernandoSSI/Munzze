@@ -1,5 +1,6 @@
 package github.FernandoSSI.Munzze.domain;
 
+import github.FernandoSSI.Munzze.domain.Dto.UserDto;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,22 +13,20 @@ public class Account implements Serializable {
 
     @Id
     private String id;
+    private String userId;
     private Double totalBalance;
     private Double totalEarnings;
     private Double totalExpenses;
 
-    @DBRef
-    private User user;
-
     public Account() {
     }
 
-    public Account(String id, Double totalBalance, Double totalEarnings, Double totalExpenses, User user) {
+    public Account(String id,  String userId, Double totalBalance, Double totalEarnings, Double totalExpenses) {
         id = id;
         this.totalBalance = totalBalance;
         this.totalEarnings = totalEarnings;
         this.totalExpenses = totalExpenses;
-        this.user = user;
+        this.userId= userId;
     }
 
     public String getId() {
@@ -62,12 +61,12 @@ public class Account implements Serializable {
         this.totalExpenses = totalExpenses;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     @Override
