@@ -28,9 +28,10 @@ public class AccountService {
     public Account update(Account newAccount, String id){
         Account account = findById(id);
 
-        account.setTotalBalance(newAccount.getTotalBalance());
         account.setTotalEarnings(newAccount.getTotalEarnings());
         account.setTotalExpenses(newAccount.getTotalExpenses());
+        account.setTotalBalance(account.getTotalEarnings() - account.getTotalExpenses());
+
         account = accountRepository.save(account);
 
         User user = userService.findById(account.getUserId());
