@@ -1,5 +1,6 @@
 package github.FernandoSSI.Munzze.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,12 +8,13 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-@Document(collection = "earnings")
+@Document(collection = "earning")
 public class Earning implements Serializable {
 
     @Id
     private String id;
     private String accountId;
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private Date date;
     private String description;
     private Double amount;

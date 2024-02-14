@@ -25,7 +25,7 @@ public class EarningService {
     private AccountService accountService;
 
 
-    public Earning insert(Earning earning){
+    public Earning insert(Earning earning) {
         earning = earningRepository.save(earning);
         Account account = accountService.findById(earning.getAccountId());
         account.setTotalEarnings(account.getTotalEarnings() + earning.getAmount());
@@ -39,15 +39,15 @@ public class EarningService {
         return earning.orElseThrow(() -> new ObjectNotFoundException("Object not found"));
     }
 
-    public Page<Earning> getAllByAccount(String accountId, Pageable pageable){
+    public Page<Earning> getAllByAccount(String accountId, Pageable pageable) {
         return earningRepository.getAllByAccount(accountId, pageable);
     }
 
-    public Page<Earning> getByDateAndAccount(String accountId, Date date, Pageable pageable){
-        return earningRepository.findByDateAndAccountId(date, accountId, pageable );
+    public Page<Earning> getByDateAndAccount(String accountId, Date date, Pageable pageable) {
+        return earningRepository.findByDateAndAccountId(date, accountId, pageable);
     }
 
-    public Page<Earning> getByYearAndAccount(String accountId, int year){
+    public Page<Earning> getByYearAndAccount(String accountId, int year, Pageable pageable) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
@@ -56,25 +56,25 @@ public class EarningService {
         cal.set(Calendar.MONTH, Calendar.DECEMBER);
         cal.set(Calendar.DAY_OF_MONTH, 31);
         Date endDate = cal.getTime();
-        return earningRepository.findByPeriod(startDate, endDate, accountId);
+        return earningRepository.findByPeriod(startDate, endDate, accountId, pageable);
     }
 
-     Page<Earning> getByMonthAndAccount(String accountId, int year, int month){
-         Calendar cal = Calendar.getInstance();
-         cal.set(Calendar.YEAR, year);
-         cal.set(Calendar.MONTH, month - 1);
-         cal.set(Calendar.DAY_OF_MONTH, 1);
-         Date startDate = cal.getTime();
-         cal.add(Calendar.MONTH, 1);
-         Date endDate = cal.getTime();
-         return earningRepository.findByPeriod(startDate, endDate, accountId);
-     }
-
-    public Page<Earning> getByPeriodAndAccount(String accountId, Date startDate, Date endDate ){
-        return earningRepository.findByPeriod(startDate, endDate, accountId);
+    Page<Earning> getByMonthAndAccount(String accountId, int year, int month, Pageable pageable) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month - 1);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        Date startDate = cal.getTime();
+        cal.add(Calendar.MONTH, 1);
+        Date endDate = cal.getTime();
+        return earningRepository.findByPeriod(startDate, endDate, accountId, pageable);
     }
 
-    public Earning update(Earning newEarning){
+    public Page<Earning> getByPeriodAndAccount(String accountId, Date startDate, Date endDate, Pageable pageable) {
+        return earningRepository.findByPeriod(startDate, endDate, accountId, pageable);
+    }
+
+    public Earning update(Earning newEarning) {
         Earning earning = findById(newEarning.getId());
         earning.setAmount(newEarning.getAmount());
         earning.setDate(newEarning.getDate());
@@ -82,9 +82,9 @@ public class EarningService {
         return earningRepository.save(earning);
     }
 
-    public void delete(String id){
+    public void delete(String id) {
         Earning earning = findById(id);
-        if(earning != null){
+        if (earning != null) {
             earningRepository.deleteById(id);
         }
     }
