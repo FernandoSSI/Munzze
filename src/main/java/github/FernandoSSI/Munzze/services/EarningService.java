@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 
@@ -46,10 +47,46 @@ public class EarningService {
         return earningRepository.findByDateAndAccountId(date, accountId, pageable );
     }
 
-    //public Page<Earning> getByYearAndAccount(){}
-    //public Page<Earning> getByMonthAndAccount(){}
-    //public Page<Earning> getByWeekAndAccount(){}
-    //public Page<Earning> getByPeriodAndAccount(){}
+    public Page<Earning> getByYearAndAccount(String accountId, int year){
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        Date startDate = cal.getTime();
+        cal.set(Calendar.MONTH, Calendar.DECEMBER);
+        cal.set(Calendar.DAY_OF_MONTH, 31);
+        Date endDate = cal.getTime();
+        return earningRepository.findByPeriod(startDate, endDate, accountId);
+    }
 
+     Page<Earning> getByMonthAndAccount(String accountId, int year, int month){
+         Calendar cal = Calendar.getInstance();
+         cal.set(Calendar.YEAR, year);
+         cal.set(Calendar.MONTH, month - 1);
+         cal.set(Calendar.DAY_OF_MONTH, 1);
+         Date startDate = cal.getTime();
+         cal.add(Calendar.MONTH, 1);
+         Date endDate = cal.getTime();
+         return earningRepository.findByPeriod(startDate, endDate, accountId);
+     }
+
+    public Page<Earning> getByPeriodAndAccount(String accountId, Date startDate, Date endDate ){
+        return earningRepository.findByPeriod(startDate, endDate, accountId);
+    }
+
+    public Earning update(Earning newEarning){
+        Earning earning = findById(newEarning.getId());
+        earning.setAmount(newEarning.getAmount());
+        earning.setDate(newEarning.getDate());
+        earning.setDescription(newEarning.getDescription());
+        return earningRepository.save(earning);
+    }
+
+    public void delete(String id){
+        Earning earning = findById(id);
+        if(earning != null){
+            earningRepository.deleteById(id);
+        }
+    }
 
 }

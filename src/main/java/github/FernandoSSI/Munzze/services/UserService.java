@@ -62,8 +62,6 @@ public class UserService {
         if(user!=null){
             userRepository.deleteById(id);
             accountRepository.deleteById(user.getAccount().getId());
-        } else {
-            throw new ObjectNotFoundException("Object not found");
         }
     }
 }
