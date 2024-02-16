@@ -59,7 +59,7 @@ public class EarningService {
         return earningRepository.findByPeriod(startDate, endDate, accountId, pageable);
     }
 
-    Page<Earning> getByMonthAndAccount(String accountId, int year, int month, Pageable pageable) {
+    public Page<Earning> getByMonthAndAccount(String accountId, int year, int month, Pageable pageable) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, month - 1);
