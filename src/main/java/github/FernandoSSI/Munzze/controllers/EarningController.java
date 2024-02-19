@@ -61,8 +61,8 @@ public class EarningController {
         Date parseStartDate;
         Date parseEndDate;
         try{
-            parseEndDate = new SimpleDateFormat("dd-MM-yyyy").parse(endDate);
-            parseStartDate = new SimpleDateFormat("dd-MM-yyyy").parse(startDate);
+            parseStartDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").parse(startDate + " 00:00:00");
+            parseEndDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").parse(endDate + " 23:59:59");
         } catch (ParseException e) {
             return ResponseEntity.badRequest().build();
         }

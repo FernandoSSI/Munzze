@@ -15,10 +15,10 @@ public interface EarningRepository extends MongoRepository<Earning, String> {
     @Query("{ 'accountId': ?0 }")
     Page<Earning> getAllByAccount(String accountId, Pageable pageable);
 
-    @Query("{'date': ?0, 'accountId': ?1}")
-    Page<Earning> findByDateAndAccountId(Date date, String accountId, Pageable pageable);
+    @Query("{'date': {$gte: ?0, $lt: ?1}, 'accountId': ?2}")
+    Page<Earning> findByDateAndAccountId(Date startDate, Date endDate, String accountId, Pageable pageable);
 
-    @Query("{'date': {$gte: ?0, $lte: ?1}, 'accountId': ?2}")
+    @Query("{'date' : { $gte: ?0, $lte: ?1 }, 'accountId': ?2}")
     Page<Earning> findByPeriod(Date startDate, Date endDate, String accountId, Pageable pageable);
 
 

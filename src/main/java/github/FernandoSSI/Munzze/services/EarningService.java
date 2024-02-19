@@ -44,15 +44,25 @@ public class EarningService {
     }
 
     public Page<Earning> getByDateAndAccount(String accountId, Date date, Pageable pageable) {
-        return earningRepository.findByDateAndAccountId(date, accountId, pageable);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        Date startDate = cal.getTime();
+
+        cal.add(Calendar.DAY_OF_MONTH, 2);
+        Date endDate = cal.getTime();
+
+        return earningRepository.findByDateAndAccountId(startDate, endDate, accountId, pageable);
     }
 
     public Page<Earning> getByYearAndAccount(String accountId, int year, Pageable pageable) {
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.MONTH, Calendar.JANUARY);
-        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.YEAR, year - 1);
+        cal.set(Calendar.MONTH, Calendar.DECEMBER);
+        cal.set(Calendar.DAY_OF_MONTH, 31);
         Date startDate = cal.getTime();
+        cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, Calendar.DECEMBER);
         cal.set(Calendar.DAY_OF_MONTH, 31);
         Date endDate = cal.getTime();
@@ -61,17 +71,29 @@ public class EarningService {
 
     public Page<Earning> getByMonthAndAccount(String accountId, int year, int month, Pageable pageable) {
         Calendar cal = Calendar.getInstance();
+        cal.clear();
         cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.MONTH, month - 1);
-        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.MONTH, month - 2);
+        int lastDayOfMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        cal.set(Calendar.DAY_OF_MONTH, lastDayOfMonth);
         Date startDate = cal.getTime();
+
         cal.add(Calendar.MONTH, 1);
+        if (month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
         Date endDate = cal.getTime();
+
         return earningRepository.findByPeriod(startDate, endDate, accountId, pageable);
     }
 
     public Page<Earning> getByPeriodAndAccount(String accountId, Date startDate, Date endDate, Pageable pageable) {
-        return earningRepository.findByPeriod(startDate, endDate, accountId, pageable);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+        calendar.add(Calendar.DATE, -1);
+        Date adjustedStartDate = calendar.getTime();
+
+        return earningRepository.findByPeriod(adjustedStartDate, endDate, accountId, pageable);
     }
 
     public Earning update(Earning newEarning) {
