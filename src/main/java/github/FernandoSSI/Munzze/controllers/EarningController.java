@@ -1,6 +1,7 @@
 package github.FernandoSSI.Munzze.controllers;
 
 import github.FernandoSSI.Munzze.domain.Earning;
+import github.FernandoSSI.Munzze.domain.User;
 import github.FernandoSSI.Munzze.services.EarningService;
 import github.FernandoSSI.Munzze.services.util.URL;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,6 +112,19 @@ public class EarningController {
         Page<Earning> earnings = earningService.getByDateAndAccount(accountId, date, pageable);
 
         return ResponseEntity.ok().body(earnings);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Earning> update(@PathVariable String id, @RequestBody Earning earning){
+        earning.setId(id);
+        earningService.update(earning);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id){
+        earningService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 
