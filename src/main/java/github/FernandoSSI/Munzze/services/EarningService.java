@@ -98,9 +98,19 @@ public class EarningService {
 
     public Earning update(Earning newEarning) {
         Earning earning = findById(newEarning.getId());
+
+        Account account = accountService.findById(earning.getAccountId());
+        account.setTotalBalance(account.getTotalBalance()-earning.getAmount());
+        account.setTotalEarnings(account.getTotalEarnings()-earning.getAmount());
+
         earning.setAmount(newEarning.getAmount());
+
+        account.setTotalBalance(account.getTotalBalance()+newEarning.getAmount());
+        account.setTotalEarnings(account.getTotalEarnings()+newEarning.getAmount());
+
         earning.setDate(newEarning.getDate());
         earning.setDescription(newEarning.getDescription());
+        accountRepository.save(account);
         return earningRepository.save(earning);
     }
 
