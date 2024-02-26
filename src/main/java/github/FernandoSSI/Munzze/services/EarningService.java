@@ -117,6 +117,10 @@ public class EarningService {
     public void delete(String id) {
         Earning earning = findById(id);
         if (earning != null) {
+            Account account = accountService.findById(earning.getAccountId());
+            account.setTotalEarnings(account.getTotalEarnings()-earning.getAmount());
+            account.setTotalBalance(account.getTotalBalance()-earning.getAmount());
+            accountRepository.save(account);
             earningRepository.deleteById(id);
         }
     }
