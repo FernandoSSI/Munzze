@@ -1,9 +1,7 @@
 package github.FernandoSSI.Munzze.controllers;
 
-import github.FernandoSSI.Munzze.domain.Earning;
-import github.FernandoSSI.Munzze.domain.User;
-import github.FernandoSSI.Munzze.services.EarningService;
-import github.FernandoSSI.Munzze.services.util.URL;
+import github.FernandoSSI.Munzze.domain.Income;
+import github.FernandoSSI.Munzze.services.IncomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,40 +17,40 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @RestController
-@RequestMapping(value = "/earnings")
+@RequestMapping(value = "/incomes")
 @CrossOrigin(origins = "*")
-public class EarningController {
+public class IncomeController {
 
     @Autowired
-    private EarningService earningService;
+    private IncomeService incomeService;
 
     @PostMapping
-    public ResponseEntity<Earning> insert(@RequestBody Earning earning) {
-        earning = earningService.insert(earning);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(earning.getId()).toUri();
+    public ResponseEntity<Income> insert(@RequestBody Income income) {
+        income = incomeService.insert(income);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(income.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
 
     @GetMapping
-    public ResponseEntity<Page<Earning>> getAll(
+    public ResponseEntity<Page<Income>> getAll(
             @RequestParam() String accountId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Earning> earnings = earningService.getAllByAccount(accountId, pageable);
+        Page<Income> earnings = incomeService.getAllByAccount(accountId, pageable);
 
         return ResponseEntity.ok().body(earnings);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Earning> findById(@PathVariable String id) {
-        Earning earning = earningService.findById(id);
-        return ResponseEntity.ok().body(earning);
+    public ResponseEntity<Income> findById(@PathVariable String id) {
+        Income income = incomeService.findById(id);
+        return ResponseEntity.ok().body(income);
     }
 
     @GetMapping("/search-by-period")
-    public ResponseEntity<Page<Earning>> findByPeriod(
+    public ResponseEntity<Page<Income>> findByPeriod(
             @RequestParam() String accountId,
             @RequestParam() @DateTimeFormat(pattern = "dd-MM-yyyy") String startDate,
             @RequestParam() @DateTimeFormat(pattern = "dd-MM-yyyy") String endDate,
@@ -69,26 +67,26 @@ public class EarningController {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Earning> earnings = earningService.getByPeriodAndAccount(accountId, parseStartDate, parseEndDate, pageable);
+        Page<Income> earnings = incomeService.getByPeriodAndAccount(accountId, parseStartDate, parseEndDate, pageable);
 
         return ResponseEntity.ok().body(earnings);
     }
 
     @GetMapping("/search-by-year")
-    public ResponseEntity<Page<Earning>> findByYear(
+    public ResponseEntity<Page<Income>> findByYear(
             @RequestParam() String accountId,
             @RequestParam() int year,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Earning> earnings = earningService.getByYearAndAccount(accountId, year, pageable);
+        Page<Income> earnings = incomeService.getByYearAndAccount(accountId, year, pageable);
 
         return ResponseEntity.ok().body(earnings);
     }
 
     @GetMapping("/search-by-month")
-    public ResponseEntity<Page<Earning>> findByMonth(
+    public ResponseEntity<Page<Income>> findByMonth(
             @RequestParam() String accountId,
             @RequestParam() int month,
             @RequestParam() int year,
@@ -96,34 +94,34 @@ public class EarningController {
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Earning> earnings = earningService.getByMonthAndAccount(accountId, year, month, pageable);
+        Page<Income> earnings = incomeService.getByMonthAndAccount(accountId, year, month, pageable);
 
         return ResponseEntity.ok().body(earnings);
     }
 
     @GetMapping("/search-by-date")
-    public ResponseEntity<Page<Earning>> findByDate(
+    public ResponseEntity<Page<Income>> findByDate(
             @RequestParam() String accountId,
             @RequestParam() @DateTimeFormat(pattern = "dd-MM-yyyy") Date date,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Earning> earnings = earningService.getByDateAndAccount(accountId, date, pageable);
+        Page<Income> earnings = incomeService.getByDateAndAccount(accountId, date, pageable);
 
         return ResponseEntity.ok().body(earnings);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Earning> update(@PathVariable String id, @RequestBody Earning earning){
-        earning.setId(id);
-        earningService.update(earning);
+    public ResponseEntity<Income> update(@PathVariable String id, @RequestBody Income income){
+        income.setId(id);
+        incomeService.update(income);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id){
-        earningService.delete(id);
+        incomeService.delete(id);
         return ResponseEntity.noContent().build();
     }
 

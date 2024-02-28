@@ -8,8 +8,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-@Document(collection = "earning")
-public class Earning implements Serializable {
+@Document(collection = "income")
+public class Income implements Serializable {
 
     @Id
     private String id;
@@ -19,10 +19,10 @@ public class Earning implements Serializable {
     private String description;
     private Double amount;
 
-    public Earning() {
+    public Income() {
     }
 
-    public Earning(String id, String accountId, Date date, String description, Double amount) {
+    public Income(String id, String accountId, Date date, String description, Double amount) {
         this.id = id;
         this.accountId = accountId;
         this.date = date;
@@ -74,7 +74,7 @@ public class Earning implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Earning earnings = (Earning) o;
+        Income earnings = (Income) o;
         return Objects.equals(id, earnings.id);
     }
 

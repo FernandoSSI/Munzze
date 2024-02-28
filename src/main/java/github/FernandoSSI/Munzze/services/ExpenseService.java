@@ -1,7 +1,6 @@
 package github.FernandoSSI.Munzze.services;
 
 import github.FernandoSSI.Munzze.domain.Account;
-import github.FernandoSSI.Munzze.domain.Earning;
 import github.FernandoSSI.Munzze.domain.Expense;
 import github.FernandoSSI.Munzze.repositories.AccountRepository;
 import github.FernandoSSI.Munzze.repositories.ExpenseRepository;
