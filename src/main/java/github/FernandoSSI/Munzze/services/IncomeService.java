@@ -2,8 +2,10 @@ package github.FernandoSSI.Munzze.services;
 
 import github.FernandoSSI.Munzze.domain.Account;
 import github.FernandoSSI.Munzze.domain.Income;
+import github.FernandoSSI.Munzze.domain.SubAccount;
 import github.FernandoSSI.Munzze.repositories.AccountRepository;
 import github.FernandoSSI.Munzze.repositories.IncomeRepository;
+import github.FernandoSSI.Munzze.repositories.SubAccountRepository;
 import github.FernandoSSI.Munzze.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -23,14 +26,28 @@ public class IncomeService {
     private AccountRepository accountRepository;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private SubAccountRepository subAccountRepository;
+    @Autowired
+    private SubAccountService subAccountService;
 
 
     public Income insert(Income income) {
         income = incomeRepository.save(income);
+
         Account account = accountService.findById(income.getAccountId());
-        account.setTotalEarnings(account.getTotalEarnings() + income.getAmount());
+
+        account.setTotalIncomes(account.getTotalIncomes() + income.getAmount());
         account.setTotalBalance(account.getTotalBalance() + income.getAmount());
         accountRepository.save(account);
+
+        if (income.getSubAccountId() != null) {
+            SubAccount subAccount = subAccountService.findById(income.getSubAccountId());
+            subAccount.setTotalIncomes(subAccount.getTotalIncomes() + income.getAmount());
+            subAccount.setTotalBalance(subAccount.getTotalBalance() + income.getAmount());
+            subAccountRepository.save(subAccount);
+        }
+        // fazer a verificação da category depois
         return income;
     }
 
@@ -99,18 +116,35 @@ public class IncomeService {
     public Income update(Income newIncome) {
         Income income = findById(newIncome.getId());
 
-        Account account = accountService.findById(income.getAccountId());
-        account.setTotalBalance(account.getTotalBalance()- income.getAmount());
-        account.setTotalEarnings(account.getTotalEarnings()- income.getAmount());
+        if (!Objects.equals(income.getAmount(), newIncome.getAmount())) {
+            Account account = accountService.findById(income.getAccountId());
+            account.setTotalBalance(account.getTotalBalance() - income.getAmount());
+            account.setTotalIncomes(account.getTotalIncomes() - income.getAmount());
+
+            account.setTotalBalance(account.getTotalBalance() + newIncome.getAmount());
+            account.setTotalIncomes(account.getTotalIncomes() + newIncome.getAmount());
+            accountRepository.save(account);
+        }
+
+        if (!Objects.equals(income.getSubAccountId(), newIncome.getSubAccountId())) {
+            if (income.getSubAccountId()!=null) {
+                SubAccount subAccount = subAccountService.findById(income.getSubAccountId());
+                subAccount.setTotalBalance(subAccount.getTotalBalance() - income.getAmount());
+                subAccount.setTotalIncomes(subAccount.getTotalIncomes() - income.getAmount());
+                subAccountRepository.save(subAccount);
+            }
+            if (newIncome.getSubAccountId()!= null) {
+                SubAccount newSubAccount = subAccountService.findById(newIncome.getSubAccountId());
+                newSubAccount.setTotalBalance(newSubAccount.getTotalBalance() + newIncome.getAmount());
+                newSubAccount.setTotalIncomes(newSubAccount.getTotalIncomes() + newIncome.getAmount());
+                subAccountRepository.save(newSubAccount);
+            }
+        }
 
         income.setAmount(newIncome.getAmount());
-
-        account.setTotalBalance(account.getTotalBalance()+ newIncome.getAmount());
-        account.setTotalEarnings(account.getTotalEarnings()+ newIncome.getAmount());
-
         income.setDate(newIncome.getDate());
         income.setDescription(newIncome.getDescription());
-        accountRepository.save(account);
+
         return incomeRepository.save(income);
     }
 
@@ -118,11 +152,20 @@ public class IncomeService {
         Income income = findById(id);
         if (income != null) {
             Account account = accountService.findById(income.getAccountId());
-            account.setTotalEarnings(account.getTotalEarnings()- income.getAmount());
-            account.setTotalBalance(account.getTotalBalance()- income.getAmount());
+            account.setTotalIncomes(account.getTotalIncomes() - income.getAmount());
+            account.setTotalBalance(account.getTotalBalance() - income.getAmount());
             accountRepository.save(account);
+
+            if (income.getSubAccountId() != null) {
+                SubAccount subAccount = subAccountService.findById(income.getSubAccountId());
+                subAccount.setTotalIncomes(subAccount.getTotalIncomes() - income.getAmount());
+                subAccount.setTotalBalance(subAccount.getTotalBalance() - income.getAmount());
+                subAccountRepository.save(subAccount);
+            }
             incomeRepository.deleteById(id);
         }
+
+
     }
 
 }

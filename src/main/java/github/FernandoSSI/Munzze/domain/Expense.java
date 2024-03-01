@@ -14,6 +14,7 @@ public class Expense implements Serializable {
     @Id
     private String id;
     private String accountId;
+    private String subAccountId;
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date date;
     private String description;
@@ -22,9 +23,10 @@ public class Expense implements Serializable {
     public Expense() {
     }
 
-    public Expense(String id, String accountId, Date date, String description, Double amount) {
+    public Expense(String id, String accountId,String subAccountId, Date date, String description, Double amount) {
         this.id = id;
         this.accountId = accountId;
+        this.subAccountId = subAccountId;
         this.date = date;
         this.description = description;
         this.amount = amount;
@@ -68,6 +70,14 @@ public class Expense implements Serializable {
 
     public void setAmount(Double amount) {
         this.amount = amount;
+    }
+
+    public String getSubAccountId() {
+        return subAccountId;
+    }
+
+    public void setSubAccountId(String subAccountId) {
+        this.subAccountId = subAccountId;
     }
 
     @Override

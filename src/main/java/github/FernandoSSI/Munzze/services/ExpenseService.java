@@ -1,9 +1,10 @@
 package github.FernandoSSI.Munzze.services;
 
-import github.FernandoSSI.Munzze.domain.Account;
+import github.FernandoSSI.Munzze.domain.*;
 import github.FernandoSSI.Munzze.domain.Expense;
 import github.FernandoSSI.Munzze.repositories.AccountRepository;
 import github.FernandoSSI.Munzze.repositories.ExpenseRepository;
+import github.FernandoSSI.Munzze.repositories.SubAccountRepository;
 import github.FernandoSSI.Munzze.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -24,13 +26,27 @@ public class ExpenseService {
     @Autowired
     private AccountService accountService;
 
+    @Autowired
+    private SubAccountRepository subAccountRepository;
+    @Autowired
+    private SubAccountService subAccountService;
+
 
     public Expense insert(Expense expense) {
         expense = expenseRepository.save(expense);
+
         Account account = accountService.findById(expense.getAccountId());
         account.setTotalExpenses(account.getTotalExpenses() + expense.getAmount());
         account.setTotalBalance(account.getTotalBalance() - expense.getAmount());
         accountRepository.save(account);
+
+        if (expense.getSubAccountId() != null) {
+            SubAccount subAccount = subAccountService.findById(expense.getSubAccountId());
+            subAccount.setTotalExpenses(subAccount.getTotalExpenses() + expense.getAmount());
+            subAccount.setTotalBalance(subAccount.getTotalBalance() - expense.getAmount());
+            subAccountRepository.save(subAccount);
+        }
+        // fazer a verificação da category depois
         return expense;
     }
 
@@ -99,18 +115,35 @@ public class ExpenseService {
     public Expense update(Expense newExpense) {
         Expense expense = findById(newExpense.getId());
 
-        Account account = accountService.findById(expense.getAccountId());
-        account.setTotalBalance(account.getTotalBalance()+expense.getAmount());
-        account.setTotalExpenses(account.getTotalExpenses()-expense.getAmount());
+        if (!Objects.equals(expense.getAmount(), newExpense.getAmount())) {
+            Account account = accountService.findById(expense.getAccountId());
+            account.setTotalBalance(account.getTotalBalance() + expense.getAmount());
+            account.setTotalExpenses(account.getTotalExpenses() - expense.getAmount());
+
+            account.setTotalBalance(account.getTotalBalance() - newExpense.getAmount());
+            account.setTotalExpenses(account.getTotalExpenses() + newExpense.getAmount());
+            accountRepository.save(account);
+        }
+
+        if (!Objects.equals(expense.getSubAccountId(), newExpense.getSubAccountId())) {
+            if (expense.getSubAccountId()!=null) {
+                SubAccount subAccount = subAccountService.findById(expense.getSubAccountId());
+                subAccount.setTotalBalance(subAccount.getTotalBalance() + expense.getAmount());
+                subAccount.setTotalExpenses(subAccount.getTotalExpenses() - expense.getAmount());
+                subAccountRepository.save(subAccount);
+            }
+            if (newExpense.getSubAccountId()!= null) {
+                SubAccount newSubAccount = subAccountService.findById(newExpense.getSubAccountId());
+                newSubAccount.setTotalBalance(newSubAccount.getTotalBalance() - newExpense.getAmount());
+                newSubAccount.setTotalExpenses(newSubAccount.getTotalExpenses() + newExpense.getAmount());
+                subAccountRepository.save(newSubAccount);
+            }
+        }
 
         expense.setAmount(newExpense.getAmount());
-
-        account.setTotalBalance(account.getTotalBalance()-newExpense.getAmount());
-        account.setTotalExpenses(account.getTotalExpenses()+newExpense.getAmount());
-
         expense.setDate(newExpense.getDate());
         expense.setDescription(newExpense.getDescription());
-        accountRepository.save(account);
+
         return expenseRepository.save(expense);
     }
 
@@ -118,11 +151,19 @@ public class ExpenseService {
         Expense expense = findById(id);
         if (expense != null) {
             Account account = accountService.findById(expense.getAccountId());
-            account.setTotalExpenses(account.getTotalExpenses()-expense.getAmount());
-            account.setTotalBalance(account.getTotalBalance()+expense.getAmount());
+            account.setTotalExpenses(account.getTotalExpenses() - expense.getAmount());
+            account.setTotalBalance(account.getTotalBalance() + expense.getAmount());
             accountRepository.save(account);
+
+            if (expense.getSubAccountId() != null) {
+                SubAccount subAccount = subAccountService.findById(expense.getSubAccountId());
+                subAccount.setTotalExpenses(subAccount.getTotalExpenses() - expense.getAmount());
+                subAccount.setTotalBalance(subAccount.getTotalBalance() + expense.getAmount());
+                subAccountRepository.save(subAccount);
+            }
             expenseRepository.deleteById(id);
         }
+
     }
 
 }

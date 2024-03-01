@@ -16,20 +16,20 @@ public class SubAccount implements Serializable{
     private String description;
     private String Icon;
     private Double totalBalance;
-    private Double totalEarnings;
+    private Double totalIncomes;
     private Double totalExpenses;
 
     public SubAccount() {
     }
 
-    public SubAccount(String id, String accountId, String subAccountName, String description, String icon, Double totalBalance, Double totalEarnings, Double totalExpenses) {
+    public SubAccount(String id, String accountId, String subAccountName, String description, String icon, Double totalBalance, Double totalIncomes, Double totalExpenses) {
         this.id = id;
         AccountId = accountId;
         this.subAccountName = subAccountName;
         this.description = description;
         Icon = icon;
         this.totalBalance = totalBalance;
-        this.totalEarnings = totalEarnings;
+        this.totalIncomes = totalIncomes;
         this.totalExpenses = totalExpenses;
     }
 
@@ -81,12 +81,12 @@ public class SubAccount implements Serializable{
         this.totalBalance = totalBalance;
     }
 
-    public Double getTotalEarnings() {
-        return totalEarnings;
+    public Double getTotalIncomes() {
+        return totalIncomes;
     }
 
-    public void setTotalEarnings(Double totalEarnings) {
-        this.totalEarnings = totalEarnings;
+    public void setTotalIncomes(Double totalIncomes) {
+        this.totalIncomes = totalIncomes;
     }
 
     public Double getTotalExpenses() {

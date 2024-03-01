@@ -15,16 +15,16 @@ public class Account implements Serializable {
     private String id;
     private String userId;
     private Double totalBalance;
-    private Double totalEarnings;
+    private Double totalIncomes;
     private Double totalExpenses;
 
     public Account() {
     }
 
-    public Account(String id,  String userId, Double totalBalance, Double totalEarnings, Double totalExpenses) {
+    public Account(String id,  String userId, Double totalBalance, Double totalIncomes, Double totalExpenses) {
         id = id;
         this.totalBalance = totalBalance;
-        this.totalEarnings = totalEarnings;
+        this.totalIncomes = totalIncomes;
         this.totalExpenses = totalExpenses;
         this.userId= userId;
     }
@@ -45,12 +45,12 @@ public class Account implements Serializable {
         this.totalBalance = totalBalance;
     }
 
-    public Double getTotalEarnings() {
-        return totalEarnings;
+    public Double getTotalIncomes() {
+        return totalIncomes;
     }
 
-    public void setTotalEarnings(Double totalEarnings) {
-        this.totalEarnings = totalEarnings;
+    public void setTotalIncomes(Double totalIncomes) {
+        this.totalIncomes = totalIncomes;
     }
 
     public Double getTotalExpenses() {

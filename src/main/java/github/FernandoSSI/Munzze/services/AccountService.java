@@ -28,9 +28,9 @@ public class AccountService {
     public Account update(Account newAccount, String id){
         Account account = findById(id);
 
-        account.setTotalEarnings(newAccount.getTotalEarnings());
+        account.setTotalIncomes(newAccount.getTotalIncomes());
         account.setTotalExpenses(newAccount.getTotalExpenses());
-        account.setTotalBalance(account.getTotalEarnings() - account.getTotalExpenses());
+        account.setTotalBalance(account.getTotalIncomes() - account.getTotalExpenses());
 
         account = accountRepository.save(account);
 
