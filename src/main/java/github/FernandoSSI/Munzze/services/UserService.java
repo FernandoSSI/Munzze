@@ -63,5 +63,7 @@ public class UserService {
             userRepository.deleteById(id);
             accountRepository.deleteById(user.getAccount().getId());
         }
+
+        // deletar tudo referente ao user
     }
 }
