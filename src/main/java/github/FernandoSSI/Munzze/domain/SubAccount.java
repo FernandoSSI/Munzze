@@ -11,10 +11,10 @@ public class SubAccount implements Serializable{
 
     @Id
     private String id;
-    private String AccountId;
+    private String accountId;
     private String subAccountName;
     private String description;
-    private String Icon;
+    private String icon;
     private Double totalBalance;
     private Double totalIncomes;
     private Double totalExpenses;
@@ -24,10 +24,10 @@ public class SubAccount implements Serializable{
 
     public SubAccount(String id, String accountId, String subAccountName, String description, String icon, Double totalBalance, Double totalIncomes, Double totalExpenses) {
         this.id = id;
-        AccountId = accountId;
+        this.accountId = accountId;
         this.subAccountName = subAccountName;
         this.description = description;
-        Icon = icon;
+        this.icon = icon;
         this.totalBalance = totalBalance;
         this.totalIncomes = totalIncomes;
         this.totalExpenses = totalExpenses;
@@ -42,11 +42,11 @@ public class SubAccount implements Serializable{
     }
 
     public String getAccountId() {
-        return AccountId;
+        return accountId;
     }
 
     public void setAccountId(String accountId) {
-        AccountId = accountId;
+        this.accountId = accountId;
     }
 
     public String getSubAccountName() {
@@ -66,11 +66,11 @@ public class SubAccount implements Serializable{
     }
 
     public String getIcon() {
-        return Icon;
+        return icon;
     }
 
     public void setIcon(String icon) {
-        Icon = icon;
+        this.icon = icon;
     }
 
     public Double getTotalBalance() {

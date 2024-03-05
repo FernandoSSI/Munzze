@@ -46,22 +46,21 @@ public class SubAccountService {
         return subAccountRepository.getAllByAccount(accountId, pageable);
     }
 
-    public Page<SubAccount> getBySubAccountName(String subAccountName, Pageable pageable) {
-        return subAccountRepository.getBySubAccountName(subAccountName, pageable);
-    }
-
     public SubAccount update(SubAccount newSubAccount) {
         SubAccount subAccount = findById(newSubAccount.getId());
 
-        if (!Objects.equals(subAccount.getTotalBalance(), newSubAccount.getTotalBalance())) {
+        if (!Objects.equals(subAccount.getTotalBalance(), newSubAccount.getTotalBalance()) ||
+                !Objects.equals(subAccount.getTotalIncomes(), newSubAccount.getTotalIncomes()) ||
+                !Objects.equals(subAccount.getTotalExpenses(), newSubAccount.getTotalExpenses())){
+            
             Account account = accountService.findById(subAccount.getAccountId());
             account.setTotalBalance(account.getTotalBalance() - subAccount.getTotalBalance());
-            account.setTotalIncomes(account.getTotalIncomes() - subAccount.getTotalBalance());
-            account.setTotalExpenses(account.getTotalIncomes() - subAccount.getTotalExpenses());
+            account.setTotalIncomes(account.getTotalIncomes() - subAccount.getTotalIncomes());
+            account.setTotalExpenses(account.getTotalExpenses() - subAccount.getTotalExpenses());
 
             account.setTotalBalance(account.getTotalBalance() + newSubAccount.getTotalBalance());
-            account.setTotalIncomes(account.getTotalIncomes() + newSubAccount.getTotalBalance());
-            account.setTotalExpenses(account.getTotalIncomes() + newSubAccount.getTotalExpenses());
+            account.setTotalIncomes(account.getTotalIncomes() + newSubAccount.getTotalIncomes());
+            account.setTotalExpenses(account.getTotalExpenses() + newSubAccount.getTotalExpenses());
             accountRepository.save(account);
 
             subAccount.setTotalBalance(newSubAccount.getTotalBalance());
@@ -76,10 +75,10 @@ public class SubAccountService {
         return subAccountRepository.save(subAccount);
     }
 
-    public void delete(String id){
+    public void delete(String id) {
         SubAccount subAccount = findById(id);
 
-        if(subAccount.getTotalBalance()!=0){
+        if (subAccount.getTotalBalance() != 0) {
             Account account = accountService.findById(subAccount.getAccountId());
             account.setTotalBalance(account.getTotalBalance() - subAccount.getTotalBalance());
             account.setTotalIncomes(account.getTotalIncomes() - subAccount.getTotalBalance());
@@ -89,8 +88,6 @@ public class SubAccountService {
 
         // deletar cada income e expense que tem o id da subaccount
         subAccountRepository.deleteById(id);
-
-
     }
 
 }
