@@ -62,7 +62,7 @@ public class SubAccountService {
 
         if (!Objects.equals(subAccount.getTotalBalance(), newSubAccount.getTotalBalance()) ||
                 !Objects.equals(subAccount.getTotalIncomes(), newSubAccount.getTotalIncomes()) ||
-                !Objects.equals(subAccount.getTotalExpenses(), newSubAccount.getTotalExpenses())){
+                !Objects.equals(subAccount.getTotalExpenses(), newSubAccount.getTotalExpenses())) {
 
             Account account = accountService.findById(subAccount.getAccountId());
             account.setTotalBalance(account.getTotalBalance() - subAccount.getTotalBalance());
@@ -90,36 +90,27 @@ public class SubAccountService {
         SubAccount subAccount = findById(id);
 
         if (subAccount.getTotalBalance() != 0) {
-            Account account = accountService.findById(subAccount.getAccountId());
-            account.setTotalBalance(account.getTotalBalance() - subAccount.getTotalBalance());
-            account.setTotalIncomes(account.getTotalIncomes() - subAccount.getTotalBalance());
-            account.setTotalExpenses(account.getTotalIncomes() - subAccount.getTotalExpenses());
+
+            List<Income> incomes = incomeRepository.listAllBySubAccount(id);
+            double totalIncomes = 0;
+            for (Income income : incomes) {
+                incomeRepository.deleteById(income.getId());
+                totalIncomes += income.getAmount();
+            }
+            List<Expense> expenses = expenseRepository.listAllBySubAccount(id);
+            double totalExpenses = 0;
+            for (Expense expense : expenses) {
+                expenseRepository.deleteById(expense.getId());
+                totalExpenses += expense.getAmount();
+            }
+
+            Account account = accountService.findById(findById(id).getAccountId());
+            account.setTotalIncomes(account.getTotalIncomes() - totalIncomes);
+            account.setTotalBalance(account.getTotalBalance() - totalIncomes);
+            account.setTotalExpenses(account.getTotalExpenses() - totalExpenses);
+            account.setTotalBalance(account.getTotalBalance() + totalExpenses);
             accountRepository.save(account);
         }
-
-
-
-
-        List<Income> incomes = incomeRepository.listAllBySubAccount(id);
-        double totalIncomes = 0;
-        for(Income income : incomes){
-            incomeRepository.deleteById(income.getId());
-            totalIncomes += income.getAmount();
-        }
-        List<Expense> expenses = expenseRepository.listAllBySubAccount(id);
-        double totalExpenses = 0;
-        for(Expense expense : expenses){
-            expenseRepository.deleteById(expense.getId());
-            totalExpenses += expense.getAmount();
-        }
-
-        Account account = accountService.findById(findById(id).getAccountId());
-        account.setTotalIncomes(account.getTotalIncomes() - totalIncomes);
-        account.setTotalBalance(account.getTotalBalance() - totalIncomes);
-        account.setTotalExpenses(account.getTotalExpenses() - totalExpenses);
-        account.setTotalBalance(account.getTotalBalance() + totalExpenses);
-        accountRepository.save(account);
-
 
         subAccountRepository.deleteById(id);
     }
