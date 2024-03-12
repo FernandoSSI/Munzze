@@ -12,10 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class IncomeService {
@@ -58,6 +55,10 @@ public class IncomeService {
 
     public Page<Income> getAllByAccount(String accountId, Pageable pageable) {
         return incomeRepository.getAllByAccount(accountId, pageable);
+    }
+
+    public Page<Income> getAllBySubAccount(String subAccountId, Pageable pageable){
+        return incomeRepository.getAllBySubAccount(subAccountId, pageable);
     }
 
     public Page<Income> getByDateAndAccount(String accountId, Date date, Pageable pageable) {
@@ -166,6 +167,20 @@ public class IncomeService {
         }
 
 
+    }
+
+    public void deleteAllBySubAccount(String subAccountId){
+        List<Income> incomes = incomeRepository.listAllBySubAccount(subAccountId);
+        double total = 0;
+        for(Income income : incomes){
+            incomeRepository.deleteById(income.getId());
+            total += income.getAmount();
+        }
+
+        Account account = accountService.findById(subAccountService.findById(subAccountId).getAccountId());
+        account.setTotalIncomes(account.getTotalIncomes() - total);
+        account.setTotalBalance(account.getTotalBalance() - total);
+        accountRepository.save(account);
     }
 
 }

@@ -51,5 +51,10 @@ public class SubAccountController {
         subAccountService.update(subAccount);
         return ResponseEntity.noContent().build();
     }
-    
+
+    @DeleteMapping ("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable String id){
+        subAccountService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }

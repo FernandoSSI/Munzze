@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface ExpenseRepository extends MongoRepository<Expense, String> {
@@ -20,6 +21,18 @@ public interface ExpenseRepository extends MongoRepository<Expense, String> {
 
     @Query("{'date' : { $gte: ?0, $lte: ?1 }, 'accountId': ?2}")
     Page<Expense> findByPeriod(Date startDate, Date endDate, String accountId, Pageable pageable);
+
+    @Query("{ 'SubAccountId': ?0 }")
+    Page<Expense> getAllBySubAccount(String accountId, Pageable pageable);
+
+    @Query("{ 'SubAccountId': ?0 }")
+    List<Expense> listAllBySubAccount(String accountId);
+
+    @Query("{'date': {$gte: ?0, $lt: ?1}, 'SubAccountId': ?2}")
+    Page<Expense> findByDateAndSubAccountId(Date startDate, Date endDate, String accountId, Pageable pageable);
+
+    @Query("{'date' : { $gte: ?0, $lte: ?1 }, 'SubAccountId': ?2}")
+    Page<Expense> findByPeriodAndSubAccount(Date startDate, Date endDate, String accountId, Pageable pageable);
 
 
 }

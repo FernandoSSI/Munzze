@@ -1,8 +1,12 @@
 package github.FernandoSSI.Munzze.services;
 
 import github.FernandoSSI.Munzze.domain.Account;
+import github.FernandoSSI.Munzze.domain.Expense;
+import github.FernandoSSI.Munzze.domain.Income;
 import github.FernandoSSI.Munzze.domain.SubAccount;
 import github.FernandoSSI.Munzze.repositories.AccountRepository;
+import github.FernandoSSI.Munzze.repositories.ExpenseRepository;
+import github.FernandoSSI.Munzze.repositories.IncomeRepository;
 import github.FernandoSSI.Munzze.repositories.SubAccountRepository;
 import github.FernandoSSI.Munzze.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -22,6 +27,12 @@ public class SubAccountService {
     private AccountService accountService;
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private IncomeRepository incomeRepository;
+    @Autowired
+    private ExpenseRepository expenseRepository;
+
 
     public SubAccount insert(SubAccount subAccount) {
         subAccount = subAccountRepository.save(subAccount);
@@ -52,7 +63,7 @@ public class SubAccountService {
         if (!Objects.equals(subAccount.getTotalBalance(), newSubAccount.getTotalBalance()) ||
                 !Objects.equals(subAccount.getTotalIncomes(), newSubAccount.getTotalIncomes()) ||
                 !Objects.equals(subAccount.getTotalExpenses(), newSubAccount.getTotalExpenses())){
-            
+
             Account account = accountService.findById(subAccount.getAccountId());
             account.setTotalBalance(account.getTotalBalance() - subAccount.getTotalBalance());
             account.setTotalIncomes(account.getTotalIncomes() - subAccount.getTotalIncomes());
@@ -86,7 +97,30 @@ public class SubAccountService {
             accountRepository.save(account);
         }
 
-        // deletar cada income e expense que tem o id da subaccount
+
+
+
+        List<Income> incomes = incomeRepository.listAllBySubAccount(id);
+        double totalIncomes = 0;
+        for(Income income : incomes){
+            incomeRepository.deleteById(income.getId());
+            totalIncomes += income.getAmount();
+        }
+        List<Expense> expenses = expenseRepository.listAllBySubAccount(id);
+        double totalExpenses = 0;
+        for(Expense expense : expenses){
+            expenseRepository.deleteById(expense.getId());
+            totalExpenses += expense.getAmount();
+        }
+
+        Account account = accountService.findById(findById(id).getAccountId());
+        account.setTotalIncomes(account.getTotalIncomes() - totalIncomes);
+        account.setTotalBalance(account.getTotalBalance() - totalIncomes);
+        account.setTotalExpenses(account.getTotalExpenses() - totalExpenses);
+        account.setTotalBalance(account.getTotalBalance() + totalExpenses);
+        accountRepository.save(account);
+
+
         subAccountRepository.deleteById(id);
     }
 
