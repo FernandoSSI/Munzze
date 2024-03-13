@@ -16,6 +16,9 @@ public interface IncomeRepository extends MongoRepository<Income, String> {
     @Query("{ 'accountId': ?0 }")
     Page<Income> getAllByAccount(String accountId, Pageable pageable);
 
+    @Query("{ 'accountId': ?0 }")
+    List<Income> listAllByAccount(String accountId);
+
     @Query("{'date': {$gte: ?0, $lt: ?1}, 'accountId': ?2}")
     Page<Income> findByDateAndAccountId(Date startDate, Date endDate, String accountId, Pageable pageable);
 

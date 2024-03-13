@@ -1,10 +1,8 @@
 package github.FernandoSSI.Munzze.services;
 
-import github.FernandoSSI.Munzze.domain.Account;
+import github.FernandoSSI.Munzze.domain.*;
 import github.FernandoSSI.Munzze.domain.Dto.UserDto;
-import github.FernandoSSI.Munzze.domain.User;
-import github.FernandoSSI.Munzze.repositories.AccountRepository;
-import github.FernandoSSI.Munzze.repositories.UserRepository;
+import github.FernandoSSI.Munzze.repositories.*;
 import github.FernandoSSI.Munzze.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,9 +15,16 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private SubAccountService subAccountService;
+    @Autowired
+    private SubAccountRepository subAccountRepository;
+    @Autowired
+    private IncomeRepository incomeRepository;
+    @Autowired
+    private ExpenseRepository expenseRepository;
 
     public User findById(String id) {
         Optional<User> user = userRepository.findById(id);
@@ -40,7 +45,7 @@ public class UserService {
         if(existingEmail==null){
             user = userRepository.save(user);
             Account account = accountRepository.save(new Account(null, user.getId(), 0.0,0.0,0.0));
-            user.setAccount(account);
+            user.setAccountId(account.getId());
             user = userRepository.save(user);
             return user;
         } else {
@@ -59,11 +64,25 @@ public class UserService {
 
     public void delete(String id){
         User user = findById(id);
-        if(user!=null){
-            userRepository.deleteById(id);
-            accountRepository.deleteById(user.getAccount().getId());
+        String accountId = user.getAccountId();
+
+        //excluir as subaccounts e os incomes e expenses associados a elas
+        List<SubAccount> subAccounts = subAccountRepository.listAllByAccount(accountId);
+        for(SubAccount subAccount: subAccounts){
+            subAccountService.delete(subAccount.getId());
         }
 
-        // deletar tudo referente ao user
+        //excluir os incomes e expenses que não estão associados a nenhuma subAccount
+        List<Income> incomes = incomeRepository.listAllByAccount(accountId);
+        for(Income income: incomes){
+            incomeRepository.deleteById(income.getId());
+        }
+        List<Expense> expenses = expenseRepository.listAllByAccount(accountId);
+        for(Expense expense: expenses){
+            incomeRepository.deleteById(expense.getId());
+        }
+
+        accountRepository.deleteById(accountId);
+        userRepository.deleteById(user.getId());
     }
 }

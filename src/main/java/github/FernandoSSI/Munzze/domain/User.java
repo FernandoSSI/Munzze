@@ -6,22 +6,23 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Document( collection = "user")
+@Document(collection = "user")
 public class User implements Serializable {
 
     @Id
     private String id;
+    private String accountId;
     private String name;
     private String email;
     private String password;
 
-    private Account account;
 
     public User() {
     }
 
-    public User(String id, String name, String email, String password) {
+    public User(String id, String accountId, String name, String email, String password) {
         this.id = id;
+        this.accountId = accountId;
         this.name = name;
         this.email = email;
         this.password = password;
@@ -59,12 +60,12 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public Account getAccount() {
-        return account;
+    public String getAccountId() {
+        return accountId;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
     }
 
     @Override

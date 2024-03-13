@@ -16,6 +16,9 @@ public interface ExpenseRepository extends MongoRepository<Expense, String> {
     @Query("{ 'accountId': ?0 }")
     Page<Expense> getAllByAccount(String accountId, Pageable pageable);
 
+    @Query("{ 'accountId': ?0 }")
+    List<Expense> listAllByAccount(String accountId);
+
     @Query("{'date': {$gte: ?0, $lt: ?1}, 'accountId': ?2}")
     Page<Expense> findByDateAndAccountId(Date startDate, Date endDate, String accountId, Pageable pageable);
 
