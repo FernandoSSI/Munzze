@@ -145,6 +145,7 @@ public class IncomeService {
         income.setAmount(newIncome.getAmount());
         income.setDate(newIncome.getDate());
         income.setDescription(newIncome.getDescription());
+        income.setSubAccountId(newIncome.getSubAccountId());
 
         return incomeRepository.save(income);
     }

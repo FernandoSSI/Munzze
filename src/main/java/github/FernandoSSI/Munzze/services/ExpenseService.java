@@ -144,6 +144,7 @@ public class ExpenseService {
         expense.setAmount(newExpense.getAmount());
         expense.setDate(newExpense.getDate());
         expense.setDescription(newExpense.getDescription());
+        expense.setSubAccountId(newExpense.getSubAccountId());
 
         return expenseRepository.save(expense);
     }

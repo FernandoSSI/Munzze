@@ -32,10 +32,10 @@ public interface ExpenseRepository extends MongoRepository<Expense, String> {
     List<Expense> listAllBySubAccount(String accountId);
 
     @Query("{'date': {$gte: ?0, $lt: ?1}, 'SubAccountId': ?2}")
-    Page<Expense> findByDateAndSubAccountId(Date startDate, Date endDate, String accountId, Pageable pageable);
+    Page<Expense> findByDateAndSubAccountId(Date startDate, Date endDate, String subAccountId, Pageable pageable);
 
     @Query("{'date' : { $gte: ?0, $lte: ?1 }, 'SubAccountId': ?2}")
-    Page<Expense> findByPeriodAndSubAccount(Date startDate, Date endDate, String accountId, Pageable pageable);
+    Page<Expense> findByPeriodAndSubAccount(Date startDate, Date endDate, String subAccountId, Pageable pageable);
 
 
 }

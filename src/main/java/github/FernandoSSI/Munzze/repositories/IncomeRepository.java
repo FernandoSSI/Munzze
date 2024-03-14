@@ -31,11 +31,11 @@ public interface IncomeRepository extends MongoRepository<Income, String> {
     @Query("{ 'SubAccountId': ?0 }")
     List<Income> listAllBySubAccount(String accountId);
 
-    @Query("{'date': {$gte: ?0, $lt: ?1}, 'SubAccountId': ?2}")
-    Page<Income> findByDateAndSubAccountId(Date startDate, Date endDate, String accountId, Pageable pageable);
+    @Query("{'date': {$gte: ?0, $lt: ?1}, 'subAccountId': ?2}")
+    Page<Income> findByDateAndSubAccountId(Date startDate, Date endDate, String subAccountId, Pageable pageable);
 
-    @Query("{'date' : { $gte: ?0, $lte: ?1 }, 'SubAccountId': ?2}")
-    Page<Income> findByPeriodAndSubAccount(Date startDate, Date endDate, String accountId, Pageable pageable);
+    @Query("{'date' : { $gte: ?0, $lte: ?1 }, 'subAccountId': ?2}")
+    Page<Income> findByPeriodAndSubAccount(Date startDate, Date endDate, String subAccountId, Pageable pageable);
 
 
 }
