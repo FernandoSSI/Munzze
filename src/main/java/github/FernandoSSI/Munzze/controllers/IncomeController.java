@@ -15,6 +15,7 @@ import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "/incomes")
@@ -52,6 +53,7 @@ public class IncomeController {
     @GetMapping("/search-by-period")
     public ResponseEntity<Page<Income>> findByPeriod(
             @RequestParam() String accountId,
+            @RequestParam(defaultValue = "0") String subAccountId,
             @RequestParam() @DateTimeFormat(pattern = "dd-MM-yyyy") String startDate,
             @RequestParam() @DateTimeFormat(pattern = "dd-MM-yyyy") String endDate,
             @RequestParam(defaultValue = "0") int page,
@@ -59,15 +61,21 @@ public class IncomeController {
 
         Date parseStartDate;
         Date parseEndDate;
-        try{
+        try {
             parseStartDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").parse(startDate + " 00:00:00");
             parseEndDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").parse(endDate + " 23:59:59");
         } catch (ParseException e) {
             return ResponseEntity.badRequest().build();
         }
 
+        Page<Income> earnings;
         Pageable pageable = PageRequest.of(page, size);
-        Page<Income> earnings = incomeService.getByPeriodAndAccount(accountId, parseStartDate, parseEndDate, pageable);
+        if (Objects.equals(subAccountId, "0")) {
+            earnings = incomeService.getByPeriodAndAccount(accountId, parseStartDate, parseEndDate, pageable);
+        } else {
+            earnings = incomeService.getByPeriodAndSubAccount(subAccountId, parseStartDate, parseEndDate, pageable);
+        }
+
 
         return ResponseEntity.ok().body(earnings);
     }
@@ -75,12 +83,19 @@ public class IncomeController {
     @GetMapping("/search-by-year")
     public ResponseEntity<Page<Income>> findByYear(
             @RequestParam() String accountId,
+            @RequestParam(defaultValue = "0") String subAccountId,
             @RequestParam() int year,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
+        Page<Income> earnings;
         Pageable pageable = PageRequest.of(page, size);
-        Page<Income> earnings = incomeService.getByYearAndAccount(accountId, year, pageable);
+        if (Objects.equals(subAccountId, "0")) {
+            earnings = incomeService.getByYearAndAccount(accountId, year, pageable);
+        } else {
+            earnings = incomeService.getByYearAndSubAccount(subAccountId, year, pageable);
+        }
+
 
         return ResponseEntity.ok().body(earnings);
     }
@@ -88,13 +103,19 @@ public class IncomeController {
     @GetMapping("/search-by-month")
     public ResponseEntity<Page<Income>> findByMonth(
             @RequestParam() String accountId,
+            @RequestParam(defaultValue = "0") String subAccountId,
             @RequestParam() int month,
             @RequestParam() int year,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Income> earnings = incomeService.getByMonthAndAccount(accountId, year, month, pageable);
+        Page<Income> earnings;
+        if(Objects.equals(subAccountId, "0")){
+            earnings = incomeService.getByMonthAndAccount(accountId, year, month, pageable);
+        } else {
+            earnings = incomeService.getByMonthAndSubAccount(subAccountId, year, month, pageable);
+        }
 
         return ResponseEntity.ok().body(earnings);
     }
@@ -102,28 +123,34 @@ public class IncomeController {
     @GetMapping("/search-by-date")
     public ResponseEntity<Page<Income>> findByDate(
             @RequestParam() String accountId,
+            @RequestParam(defaultValue = "0") String subAccountId,
             @RequestParam() @DateTimeFormat(pattern = "dd-MM-yyyy") Date date,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Income> earnings = incomeService.getByDateAndAccount(accountId, date, pageable);
+
+        Page<Income> earnings;
+        if (Objects.equals(subAccountId, "0")){
+            earnings = incomeService.getByDateAndAccount(accountId, date, pageable);
+        } else {
+            earnings = incomeService.getByDateAndSubAccount(subAccountId, date, pageable);
+        }
 
         return ResponseEntity.ok().body(earnings);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Income> update(@PathVariable String id, @RequestBody Income income){
+    public ResponseEntity<Income> update(@PathVariable String id, @RequestBody Income income) {
         income.setId(id);
         incomeService.update(income);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id){
+    public ResponseEntity<Void> delete(@PathVariable String id) {
         incomeService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 
 }
