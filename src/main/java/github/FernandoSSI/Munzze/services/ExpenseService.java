@@ -56,10 +56,6 @@ public class ExpenseService {
         return expenseRepository.getAllByAccount(accountId, pageable);
     }
 
-    public Page<Expense> getAllBySubAccount(String subAccountId, Pageable pageable){
-        return expenseRepository.getAllBySubAccount(subAccountId, pageable);
-    }
-
     public Page<Expense> getByDateAndAccount(String accountId, Date date, Pageable pageable) {
 
         Calendar cal = Calendar.getInstance();
@@ -111,6 +107,64 @@ public class ExpenseService {
         Date adjustedStartDate = calendar.getTime();
 
         return expenseRepository.findByPeriod(adjustedStartDate, endDate, accountId, pageable);
+    }
+
+    // Achar por subAccount
+    public Page<Expense> getAllBySubAccount(String subAccountId, Pageable pageable){
+        return expenseRepository.getAllBySubAccount(subAccountId, pageable);
+    }
+
+    public Page<Expense> getByDateAndSubAccount(String subAccountId, Date date, Pageable pageable) {
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        Date startDate = cal.getTime();
+
+        cal.add(Calendar.DAY_OF_MONTH, 2);
+        Date endDate = cal.getTime();
+
+        return expenseRepository.findByDateAndSubAccountId(startDate, endDate, subAccountId, pageable);
+    }
+
+    public Page<Expense> getByYearAndSubAccount(String subAccountId, int year, Pageable pageable) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year - 1);
+        cal.set(Calendar.MONTH, Calendar.DECEMBER);
+        cal.set(Calendar.DAY_OF_MONTH, 31);
+        Date startDate = cal.getTime();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, Calendar.DECEMBER);
+        cal.set(Calendar.DAY_OF_MONTH, 31);
+        Date endDate = cal.getTime();
+        return expenseRepository.findByPeriodAndSubAccount(startDate, endDate, subAccountId, pageable);
+    }
+
+    public Page<Expense> getByMonthAndSubAccount(String subAccountId, int year, int month, Pageable pageable) {
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month - 2);
+        int lastDayOfMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        cal.set(Calendar.DAY_OF_MONTH, lastDayOfMonth);
+        Date startDate = cal.getTime();
+
+        cal.add(Calendar.MONTH, 1);
+        if (month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        Date endDate = cal.getTime();
+
+        return expenseRepository.findByDateAndSubAccountId(startDate, endDate, subAccountId, pageable);
+    }
+
+    public Page<Expense> getByPeriodAndSubAccount(String subAccountId, Date startDate, Date endDate, Pageable pageable) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+        calendar.add(Calendar.DATE, -1);
+        Date adjustedStartDate = calendar.getTime();
+
+        return expenseRepository.findByPeriodAndSubAccount(adjustedStartDate, endDate, subAccountId, pageable);
     }
 
     public Expense update(Expense newExpense) {
