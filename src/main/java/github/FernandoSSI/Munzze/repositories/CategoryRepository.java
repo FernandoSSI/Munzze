@@ -11,10 +11,10 @@ import java.util.List;
 public interface CategoryRepository extends MongoRepository<Category, String> {
 
     @Query("{ 'accountId': ?0 }")
-    Page<Category> getAllByCategory(String accountId, Pageable pageable);
+    Page<Category> getAllByAccount(String accountId, Pageable pageable);
 
     @Query("{ 'accountId': ?0 }")
-    List<Category> listAllByCategory(String accountId);
+    List<Category> listAllByAccount(String accountId);
 
 
 }
