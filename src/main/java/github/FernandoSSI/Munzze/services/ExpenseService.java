@@ -3,6 +3,7 @@ package github.FernandoSSI.Munzze.services;
 import github.FernandoSSI.Munzze.domain.*;
 import github.FernandoSSI.Munzze.domain.Expense;
 import github.FernandoSSI.Munzze.repositories.AccountRepository;
+import github.FernandoSSI.Munzze.repositories.ExpenseCategoryRepository;
 import github.FernandoSSI.Munzze.repositories.ExpenseRepository;
 import github.FernandoSSI.Munzze.repositories.SubAccountRepository;
 import github.FernandoSSI.Munzze.services.exceptions.ObjectNotFoundException;
@@ -27,7 +28,10 @@ public class ExpenseService {
     private SubAccountRepository subAccountRepository;
     @Autowired
     private SubAccountService subAccountService;
-
+    @Autowired
+    private ExpenseCategoryRepository expenseCategoryRepository;
+    @Autowired
+    private ExpenseCategoryService expenseCategoryService;
 
     public Expense insert(Expense expense) {
         expense = expenseRepository.save(expense);
@@ -43,7 +47,13 @@ public class ExpenseService {
             subAccount.setTotalBalance(subAccount.getTotalBalance() - expense.getAmount());
             subAccountRepository.save(subAccount);
         }
-        // fazer a verificação da category depois
+
+        if(expense.getCategoryId() != null){
+            ExpenseCategory expenseCategory = expenseCategoryService.findById(expense.getCategoryId());
+            expenseCategory.setTotalExpenses(expenseCategory.getTotalExpenses() + expense.getAmount());
+            expenseCategoryRepository.save(expenseCategory);
+        }
+
         return expense;
     }
 

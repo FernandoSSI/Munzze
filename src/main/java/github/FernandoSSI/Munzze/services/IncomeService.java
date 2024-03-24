@@ -1,9 +1,8 @@
 package github.FernandoSSI.Munzze.services;
 
-import github.FernandoSSI.Munzze.domain.Account;
-import github.FernandoSSI.Munzze.domain.Income;
-import github.FernandoSSI.Munzze.domain.SubAccount;
+import github.FernandoSSI.Munzze.domain.*;
 import github.FernandoSSI.Munzze.repositories.AccountRepository;
+import github.FernandoSSI.Munzze.repositories.IncomeCategoryRepository;
 import github.FernandoSSI.Munzze.repositories.IncomeRepository;
 import github.FernandoSSI.Munzze.repositories.SubAccountRepository;
 import github.FernandoSSI.Munzze.services.exceptions.ObjectNotFoundException;
@@ -27,6 +26,11 @@ public class IncomeService {
     private SubAccountRepository subAccountRepository;
     @Autowired
     private SubAccountService subAccountService;
+    @Autowired
+    private IncomeCategoryRepository incomeCategoryRepository;
+    @Autowired
+    private IncomeCategoryService incomeCategoryService;
+
 
 
     public Income insert(Income income) {
@@ -44,7 +48,13 @@ public class IncomeService {
             subAccount.setTotalBalance(subAccount.getTotalBalance() + income.getAmount());
             subAccountRepository.save(subAccount);
         }
-        // fazer a verificação da category depois
+
+        if (income.getCategoryId() != null) {
+            IncomeCategory category = incomeCategoryService.findById(income.getCategoryId());
+            category.setTotalIncomes(category.getTotalIncomes() + income.getAmount());
+            incomeCategoryRepository.save(category);
+        }
+
         return income;
     }
 
