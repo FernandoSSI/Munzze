@@ -204,6 +204,21 @@ public class ExpenseService {
                 subAccountRepository.save(newSubAccount);
             }
         }
+        // Adicionar o Else
+
+        if (!Objects.equals(expense.getCategoryId(), newExpense.getCategoryId())) {
+            if (expense.getCategoryId()!=null) {
+                ExpenseCategory expenseCategory = expenseCategoryService.findById(expense.getCategoryId());
+                expenseCategory.setTotalExpenses(expenseCategory.getTotalExpenses() - expense.getAmount());
+                expenseCategoryRepository.save(expenseCategory);
+            }
+            if (newExpense.getCategoryId()!= null) {
+                ExpenseCategory newCategory = expenseCategoryService.findById(newExpense.getCategoryId());
+                newCategory.setTotalExpenses(newCategory.getTotalExpenses() + newExpense.getAmount());
+                expenseCategoryRepository.save(newCategory);
+            }
+        }
+        // Adicionar o Else
 
         expense.setAmount(newExpense.getAmount());
         expense.setDate(newExpense.getDate());

@@ -180,6 +180,7 @@ public class IncomeService {
 
 
 
+    // Melhorar Toda essa lógica
     public Income update(Income newIncome) {
         Income income = findById(newIncome.getId());
 
@@ -207,6 +208,21 @@ public class IncomeService {
                 subAccountRepository.save(newSubAccount);
             }
         }
+        // Adicionar o Else
+
+        if (!Objects.equals(income.getCategoryId(), newIncome.getCategoryId())) {
+            if (income.getCategoryId()!=null) {
+                IncomeCategory incomeCategory = incomeCategoryService.findById(income.getCategoryId());
+                incomeCategory.setTotalIncomes(incomeCategory.getTotalIncomes() - income.getAmount());
+                incomeCategoryRepository.save(incomeCategory);
+            }
+            if (newIncome.getCategoryId()!= null) {
+                IncomeCategory newCategory = incomeCategoryService.findById(newIncome.getCategoryId());
+                newCategory.setTotalIncomes(newCategory.getTotalIncomes() + newIncome.getAmount());
+                incomeCategoryRepository.save(newCategory);
+            }
+        }
+        // Adicionar o Else
 
         income.setAmount(newIncome.getAmount());
         income.setDate(newIncome.getDate());
