@@ -242,6 +242,13 @@ public class ExpenseService {
                 subAccount.setTotalBalance(subAccount.getTotalBalance() + expense.getAmount());
                 subAccountRepository.save(subAccount);
             }
+
+
+            if (expense.getCategoryId() != null) {
+                ExpenseCategory expenseCategory = expenseCategoryService.findById(expense.getSubAccountId());
+                expenseCategory.setTotalExpenses(expenseCategory.getTotalExpenses() - expense.getAmount());
+                expenseCategoryRepository.save(expenseCategory);
+            }
             expenseRepository.deleteById(id);
         }
 

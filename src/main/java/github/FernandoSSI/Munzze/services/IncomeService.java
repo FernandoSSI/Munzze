@@ -246,12 +246,20 @@ public class IncomeService {
                 subAccount.setTotalBalance(subAccount.getTotalBalance() - income.getAmount());
                 subAccountRepository.save(subAccount);
             }
+
+            if (income.getCategoryId() != null) {
+                IncomeCategory incomeCategory = incomeCategoryService.findById(income.getSubAccountId());
+                incomeCategory.setTotalIncomes(incomeCategory.getTotalIncomes() - income.getAmount());
+                incomeCategoryRepository.save(incomeCategory);
+            }
+
             incomeRepository.deleteById(id);
         }
 
 
     }
 
+    // melhorar a lógiva e usar o método delete anterior
     public void deleteAllBySubAccount(String subAccountId){
         List<Income> incomes = incomeRepository.listAllBySubAccount(subAccountId);
         double total = 0;
