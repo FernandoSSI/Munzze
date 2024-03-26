@@ -207,8 +207,15 @@ public class IncomeService {
                 newSubAccount.setTotalIncomes(newSubAccount.getTotalIncomes() + newIncome.getAmount());
                 subAccountRepository.save(newSubAccount);
             }
+        } else  if(!Objects.equals(income.getAmount(), newIncome.getAmount())){
+            SubAccount subAccount = subAccountService.findById(income.getSubAccountId());
+            subAccount.setTotalBalance(subAccount.getTotalBalance() - income.getAmount());
+            subAccount.setTotalIncomes(subAccount.getTotalIncomes() - income.getAmount());
+            subAccount.setTotalBalance(subAccount.getTotalBalance() + newIncome.getAmount());
+            subAccount.setTotalIncomes(subAccount.getTotalIncomes() + newIncome.getAmount());
+            subAccountRepository.save(subAccount);
         }
-        // Adicionar o Else
+
 
         if (!Objects.equals(income.getCategoryId(), newIncome.getCategoryId())) {
             if (income.getCategoryId()!=null) {
@@ -221,8 +228,12 @@ public class IncomeService {
                 newCategory.setTotalIncomes(newCategory.getTotalIncomes() + newIncome.getAmount());
                 incomeCategoryRepository.save(newCategory);
             }
+        } else {
+            IncomeCategory incomeCategory = incomeCategoryService.findById(income.getCategoryId());
+            incomeCategory.setTotalIncomes(incomeCategory.getTotalIncomes() - income.getAmount());
+            incomeCategory.setTotalIncomes(incomeCategory.getTotalIncomes() + newIncome.getAmount());
+            incomeCategoryRepository.save(incomeCategory);
         }
-        // Adicionar o Else
 
         income.setAmount(newIncome.getAmount());
         income.setDate(newIncome.getDate());
@@ -255,8 +266,6 @@ public class IncomeService {
 
             incomeRepository.deleteById(id);
         }
-
-
     }
 
     // melhorar a lógiva e usar o método delete anterior

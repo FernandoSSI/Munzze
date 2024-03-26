@@ -203,8 +203,14 @@ public class ExpenseService {
                 newSubAccount.setTotalExpenses(newSubAccount.getTotalExpenses() + newExpense.getAmount());
                 subAccountRepository.save(newSubAccount);
             }
+        } else if(!Objects.equals(expense.getAmount(), newExpense.getAmount())){
+            SubAccount subAccount = subAccountService.findById(expense.getSubAccountId());
+            subAccount.setTotalBalance(subAccount.getTotalBalance() + expense.getAmount());
+            subAccount.setTotalExpenses(subAccount.getTotalExpenses() - expense.getAmount());
+            subAccount.setTotalBalance(subAccount.getTotalBalance() - newExpense.getAmount());
+            subAccount.setTotalExpenses(subAccount.getTotalExpenses() + newExpense.getAmount());
+            subAccountRepository.save(subAccount);
         }
-        // Adicionar o Else
 
         if (!Objects.equals(expense.getCategoryId(), newExpense.getCategoryId())) {
             if (expense.getCategoryId()!=null) {
@@ -217,8 +223,12 @@ public class ExpenseService {
                 newCategory.setTotalExpenses(newCategory.getTotalExpenses() + newExpense.getAmount());
                 expenseCategoryRepository.save(newCategory);
             }
+        } else if(!Objects.equals(expense.getAmount(), newExpense.getAmount())){
+            ExpenseCategory expenseCategory = expenseCategoryService.findById(expense.getCategoryId());
+            expenseCategory.setTotalExpenses(expenseCategory.getTotalExpenses() - expense.getAmount());
+            expenseCategory.setTotalExpenses(expenseCategory.getTotalExpenses() + newExpense.getAmount());
+            expenseCategoryRepository.save(expenseCategory);
         }
-        // Adicionar o Else
 
         expense.setAmount(newExpense.getAmount());
         expense.setDate(newExpense.getDate());
