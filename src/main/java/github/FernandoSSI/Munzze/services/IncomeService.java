@@ -186,53 +186,50 @@ public class IncomeService {
 
         if (!Objects.equals(income.getAmount(), newIncome.getAmount())) {
             Account account = accountService.findById(income.getAccountId());
-            account.setTotalBalance(account.getTotalBalance() - income.getAmount());
-            account.setTotalIncomes(account.getTotalIncomes() - income.getAmount());
-
-            account.setTotalBalance(account.getTotalBalance() + newIncome.getAmount());
-            account.setTotalIncomes(account.getTotalIncomes() + newIncome.getAmount());
+            account.setTotalBalance(account.getTotalBalance() - income.getAmount() + newIncome.getAmount());
+            account.setTotalIncomes(account.getTotalIncomes() - income.getAmount() + newIncome.getAmount());
             accountRepository.save(account);
         }
 
-        if (!Objects.equals(income.getSubAccountId(), newIncome.getSubAccountId())) {
-            if (income.getSubAccountId()!=null) {
+        if(income.getSubAccountId() != null){
+            if (!Objects.equals(income.getSubAccountId(), newIncome.getSubAccountId())) {
+                if (income.getSubAccountId()!=null) {
+                    SubAccount subAccount = subAccountService.findById(income.getSubAccountId());
+                    subAccount.setTotalBalance(subAccount.getTotalBalance() - income.getAmount());
+                    subAccount.setTotalIncomes(subAccount.getTotalIncomes() - income.getAmount());
+                    subAccountRepository.save(subAccount);
+                }
+                if (newIncome.getSubAccountId()!= null) {
+                    SubAccount newSubAccount = subAccountService.findById(newIncome.getSubAccountId());
+                    newSubAccount.setTotalBalance(newSubAccount.getTotalBalance() + newIncome.getAmount());
+                    newSubAccount.setTotalIncomes(newSubAccount.getTotalIncomes() + newIncome.getAmount());
+                    subAccountRepository.save(newSubAccount);
+                }
+            } else  if(!Objects.equals(income.getAmount(), newIncome.getAmount())){
                 SubAccount subAccount = subAccountService.findById(income.getSubAccountId());
-                subAccount.setTotalBalance(subAccount.getTotalBalance() - income.getAmount());
-                subAccount.setTotalIncomes(subAccount.getTotalIncomes() - income.getAmount());
+                subAccount.setTotalBalance(subAccount.getTotalBalance() - income.getAmount() + newIncome.getAmount());
+                subAccount.setTotalIncomes(subAccount.getTotalIncomes() - income.getAmount() + newIncome.getAmount());
                 subAccountRepository.save(subAccount);
             }
-            if (newIncome.getSubAccountId()!= null) {
-                SubAccount newSubAccount = subAccountService.findById(newIncome.getSubAccountId());
-                newSubAccount.setTotalBalance(newSubAccount.getTotalBalance() + newIncome.getAmount());
-                newSubAccount.setTotalIncomes(newSubAccount.getTotalIncomes() + newIncome.getAmount());
-                subAccountRepository.save(newSubAccount);
-            }
-        } else  if(!Objects.equals(income.getAmount(), newIncome.getAmount())){
-            SubAccount subAccount = subAccountService.findById(income.getSubAccountId());
-            subAccount.setTotalBalance(subAccount.getTotalBalance() - income.getAmount());
-            subAccount.setTotalIncomes(subAccount.getTotalIncomes() - income.getAmount());
-            subAccount.setTotalBalance(subAccount.getTotalBalance() + newIncome.getAmount());
-            subAccount.setTotalIncomes(subAccount.getTotalIncomes() + newIncome.getAmount());
-            subAccountRepository.save(subAccount);
         }
 
-
-        if (!Objects.equals(income.getCategoryId(), newIncome.getCategoryId())) {
-            if (income.getCategoryId()!=null) {
+        if(income.getCategoryId() != null){
+            if (!Objects.equals(income.getCategoryId(), newIncome.getCategoryId())) {
+                if (income.getCategoryId()!=null) {
+                    IncomeCategory incomeCategory = incomeCategoryService.findById(income.getCategoryId());
+                    incomeCategory.setTotalIncomes(incomeCategory.getTotalIncomes() - income.getAmount());
+                    incomeCategoryRepository.save(incomeCategory);
+                }
+                if (newIncome.getCategoryId()!= null) {
+                    IncomeCategory newCategory = incomeCategoryService.findById(newIncome.getCategoryId());
+                    newCategory.setTotalIncomes(newCategory.getTotalIncomes() + newIncome.getAmount());
+                    incomeCategoryRepository.save(newCategory);
+                }
+            } else  if(!Objects.equals(income.getAmount(), newIncome.getAmount())) {
                 IncomeCategory incomeCategory = incomeCategoryService.findById(income.getCategoryId());
-                incomeCategory.setTotalIncomes(incomeCategory.getTotalIncomes() - income.getAmount());
+                incomeCategory.setTotalIncomes(incomeCategory.getTotalIncomes() - income.getAmount() + newIncome.getAmount());
                 incomeCategoryRepository.save(incomeCategory);
             }
-            if (newIncome.getCategoryId()!= null) {
-                IncomeCategory newCategory = incomeCategoryService.findById(newIncome.getCategoryId());
-                newCategory.setTotalIncomes(newCategory.getTotalIncomes() + newIncome.getAmount());
-                incomeCategoryRepository.save(newCategory);
-            }
-        } else {
-            IncomeCategory incomeCategory = incomeCategoryService.findById(income.getCategoryId());
-            incomeCategory.setTotalIncomes(incomeCategory.getTotalIncomes() - income.getAmount());
-            incomeCategory.setTotalIncomes(incomeCategory.getTotalIncomes() + newIncome.getAmount());
-            incomeCategoryRepository.save(incomeCategory);
         }
 
         income.setAmount(newIncome.getAmount());
@@ -268,19 +265,11 @@ public class IncomeService {
         }
     }
 
-    // melhorar a lógiva e usar o método delete anterior
     public void deleteAllBySubAccount(String subAccountId){
         List<Income> incomes = incomeRepository.listAllBySubAccount(subAccountId);
         double total = 0;
         for(Income income : incomes){
-            incomeRepository.deleteById(income.getId());
-            total += income.getAmount();
+            delete(income.getId());
         }
-
-        Account account = accountService.findById(subAccountService.findById(subAccountId).getAccountId());
-        account.setTotalIncomes(account.getTotalIncomes() - total);
-        account.setTotalBalance(account.getTotalBalance() - total);
-        accountRepository.save(account);
     }
-
 }

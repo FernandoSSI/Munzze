@@ -94,21 +94,20 @@ public class SubAccountService {
             List<Income> incomes = incomeRepository.listAllBySubAccount(id);
             double totalIncomes = 0;
             for (Income income : incomes) {
-                incomeRepository.deleteById(income.getId());
+                income.setSubAccountId(null);
+                incomeRepository.save(income);
                 totalIncomes += income.getAmount();
             }
             List<Expense> expenses = expenseRepository.listAllBySubAccount(id);
             double totalExpenses = 0;
             for (Expense expense : expenses) {
-                expenseRepository.deleteById(expense.getId());
+                expense.setSubAccountId(null);
+                expenseRepository.save(expense);
                 totalExpenses += expense.getAmount();
             }
 
             Account account = accountService.findById(findById(id).getAccountId());
-            account.setTotalIncomes(account.getTotalIncomes() - totalIncomes);
-            account.setTotalBalance(account.getTotalBalance() - totalIncomes);
-            account.setTotalExpenses(account.getTotalExpenses() - totalExpenses);
-            account.setTotalBalance(account.getTotalBalance() + totalExpenses);
+            account.setTotalBalance(account.getTotalBalance() - (subAccount.getTotalBalance()-(totalIncomes - totalExpenses)));
             accountRepository.save(account);
         }
 

@@ -182,52 +182,50 @@ public class ExpenseService {
 
         if (!Objects.equals(expense.getAmount(), newExpense.getAmount())) {
             Account account = accountService.findById(expense.getAccountId());
-            account.setTotalBalance(account.getTotalBalance() + expense.getAmount());
-            account.setTotalExpenses(account.getTotalExpenses() - expense.getAmount());
-
-            account.setTotalBalance(account.getTotalBalance() - newExpense.getAmount());
-            account.setTotalExpenses(account.getTotalExpenses() + newExpense.getAmount());
+            account.setTotalBalance(account.getTotalBalance() + expense.getAmount() - newExpense.getAmount());
+            account.setTotalExpenses(account.getTotalExpenses() - expense.getAmount() + newExpense.getAmount());
             accountRepository.save(account);
         }
 
-        if (!Objects.equals(expense.getSubAccountId(), newExpense.getSubAccountId())) {
-            if (expense.getSubAccountId()!=null) {
+        if(expense.getSubAccountId() != null){
+            if (!Objects.equals(expense.getSubAccountId(), newExpense.getSubAccountId())) {
+                if (expense.getSubAccountId()!=null) {
+                    SubAccount subAccount = subAccountService.findById(expense.getSubAccountId());
+                    subAccount.setTotalBalance(subAccount.getTotalBalance() + expense.getAmount());
+                    subAccount.setTotalExpenses(subAccount.getTotalExpenses() - expense.getAmount());
+                    subAccountRepository.save(subAccount);
+                }
+                if (newExpense.getSubAccountId()!= null) {
+                    SubAccount newSubAccount = subAccountService.findById(newExpense.getSubAccountId());
+                    newSubAccount.setTotalBalance(newSubAccount.getTotalBalance() - newExpense.getAmount());
+                    newSubAccount.setTotalExpenses(newSubAccount.getTotalExpenses() + newExpense.getAmount());
+                    subAccountRepository.save(newSubAccount);
+                }
+            } else if(!Objects.equals(expense.getAmount(), newExpense.getAmount())){
                 SubAccount subAccount = subAccountService.findById(expense.getSubAccountId());
-                subAccount.setTotalBalance(subAccount.getTotalBalance() + expense.getAmount());
-                subAccount.setTotalExpenses(subAccount.getTotalExpenses() - expense.getAmount());
+                subAccount.setTotalBalance(subAccount.getTotalBalance() + expense.getAmount()  - newExpense.getAmount());
+                subAccount.setTotalExpenses(subAccount.getTotalExpenses() - expense.getAmount() + newExpense.getAmount());
                 subAccountRepository.save(subAccount);
             }
-            if (newExpense.getSubAccountId()!= null) {
-                SubAccount newSubAccount = subAccountService.findById(newExpense.getSubAccountId());
-                newSubAccount.setTotalBalance(newSubAccount.getTotalBalance() - newExpense.getAmount());
-                newSubAccount.setTotalExpenses(newSubAccount.getTotalExpenses() + newExpense.getAmount());
-                subAccountRepository.save(newSubAccount);
-            }
-        } else if(!Objects.equals(expense.getAmount(), newExpense.getAmount())){
-            SubAccount subAccount = subAccountService.findById(expense.getSubAccountId());
-            subAccount.setTotalBalance(subAccount.getTotalBalance() + expense.getAmount());
-            subAccount.setTotalExpenses(subAccount.getTotalExpenses() - expense.getAmount());
-            subAccount.setTotalBalance(subAccount.getTotalBalance() - newExpense.getAmount());
-            subAccount.setTotalExpenses(subAccount.getTotalExpenses() + newExpense.getAmount());
-            subAccountRepository.save(subAccount);
         }
 
-        if (!Objects.equals(expense.getCategoryId(), newExpense.getCategoryId())) {
-            if (expense.getCategoryId()!=null) {
+        if(expense.getCategoryId() != null){
+            if (!Objects.equals(expense.getCategoryId(), newExpense.getCategoryId())) {
+                if (expense.getCategoryId()!=null) {
+                    ExpenseCategory expenseCategory = expenseCategoryService.findById(expense.getCategoryId());
+                    expenseCategory.setTotalExpenses(expenseCategory.getTotalExpenses() - expense.getAmount());
+                    expenseCategoryRepository.save(expenseCategory);
+                }
+                if (newExpense.getCategoryId()!= null) {
+                    ExpenseCategory newCategory = expenseCategoryService.findById(newExpense.getCategoryId());
+                    newCategory.setTotalExpenses(newCategory.getTotalExpenses() + newExpense.getAmount());
+                    expenseCategoryRepository.save(newCategory);
+                }
+            } else if(!Objects.equals(expense.getAmount(), newExpense.getAmount())){
                 ExpenseCategory expenseCategory = expenseCategoryService.findById(expense.getCategoryId());
-                expenseCategory.setTotalExpenses(expenseCategory.getTotalExpenses() - expense.getAmount());
+                expenseCategory.setTotalExpenses(expenseCategory.getTotalExpenses() - expense.getAmount() + newExpense.getAmount());
                 expenseCategoryRepository.save(expenseCategory);
             }
-            if (newExpense.getCategoryId()!= null) {
-                ExpenseCategory newCategory = expenseCategoryService.findById(newExpense.getCategoryId());
-                newCategory.setTotalExpenses(newCategory.getTotalExpenses() + newExpense.getAmount());
-                expenseCategoryRepository.save(newCategory);
-            }
-        } else if(!Objects.equals(expense.getAmount(), newExpense.getAmount())){
-            ExpenseCategory expenseCategory = expenseCategoryService.findById(expense.getCategoryId());
-            expenseCategory.setTotalExpenses(expenseCategory.getTotalExpenses() - expense.getAmount());
-            expenseCategory.setTotalExpenses(expenseCategory.getTotalExpenses() + newExpense.getAmount());
-            expenseCategoryRepository.save(expenseCategory);
         }
 
         expense.setAmount(newExpense.getAmount());
